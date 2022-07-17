@@ -1,4 +1,29 @@
 #!/bin/bash
+# Globals
+
+# flag to say color yes or no. default = 1 = yes.
+declare -i docolor=1
+
+# flag for looping. Default = 0 = no
+
+declare -i loop=0
+
+usage()
+{
+	cat > /dev/stderr <<EOF
+	usage: $0 [-h]
+           $0 [-l] [-n] [file..]
+        
+              Display contents of files one word at a time at random locations on the screen optionally in random collors.
+              If no files are specified then read words from stdin.
+
+              -n "no color" mode. Do not randomly select a color.
+              -l loop back to the start of the input once all input is consumed
+
+EOF
+exit
+}
+
 random()
 {
 	local low high
@@ -60,8 +85,9 @@ display()
 			lines="(( $(tput lines) -2 ))"
 			fg="$(random "$colors")"
 			x="$(random "$columns")"
-			y="$(random "$lines")" 
-			setcolor "${fg}"
+			y="$(random "$lines")"
+			
+			(( docolor )) && setcolor "${fg}"
 			print_at "${x}" "${y}" "${word}"
 		done
 	done < "${inputfile}"
@@ -89,15 +115,36 @@ main()
 	
 	for file in "${@}" ; do
 		display "$file"
-		sleep 0.4
 	done
 
 	# switch back to main screen buffer
 	tput rmcup
+
+
 }
 
 trap ctrl_c_handler INT
+
+while getopts "hln" option; do
+    case "$option" in
+    h)
+		usage
+        ;;
+    l)
+        loop=1
+        ;;
+	n)
+        docolor=0
+        ;;
+    \?)
+		usage
+        ;;
+    esac
+done
+shift $((OPTIND - 1 ))
+
 main "${@}"
 
-	
-
+while (( loop )) ; do
+	main "${@}"
+done
