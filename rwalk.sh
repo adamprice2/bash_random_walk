@@ -74,7 +74,11 @@ display()
 {
 	inputfile="${1:-/dev/stdin}"
 	colors="$(tput colors)"
-
+	if (( colors < 1 )) ; then
+		colors=1
+		docolor=0
+	fi
+	
 
 	while IFS=" " read -r  sentence ; do
 		for word in ${sentence} ; do
