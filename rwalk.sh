@@ -5,7 +5,6 @@
 declare -i docolor=1
 
 # flag for looping. Default = 0 = no
-
 declare -i loop=0
 
 usage()
@@ -58,21 +57,22 @@ print_at()
 	tput rc
 }
 
+# set fg color
 setcolor()
 {
-	# foreground and background color # int
+	# foreground color # int
 	declare -i foreground
 	foreground="${1:? missing foreground}"
-
-
 	tput setaf "$foreground"
-
 }
 
 
 display()
 {
 	inputfile="${1:-/dev/stdin}"
+	
+	# only do color output if the terminal supports it.
+
 	colors="$(tput colors)"
 	if (( colors < 1 )) ; then
 		colors=1
@@ -97,7 +97,7 @@ display()
 	done < "${inputfile}"
 }
 
-
+# be nice and reset the screen on ^c
 ctrl_c_handler()
 {
 	tput rmcup
@@ -148,6 +148,8 @@ done
 shift $((OPTIND - 1 ))
 
 main "${@}"
+
+# If the loop variable is set then keep going forever.
 
 while (( loop )) ; do
 	main "${@}"
