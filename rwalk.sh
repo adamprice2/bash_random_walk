@@ -13,7 +13,7 @@ usage()
 	usage: $0 [-h]
            $0 [-l] [-n] [file..]
         
-              Display contents of files one word at a time at random locations on the screen optionally in random collors.
+              Display contents of files one word at a time at random locations on the screen optionally in random colors.
               If no files are specified then read words from stdin.
 
               -n "no color" mode. Do not randomly select a color.
